@@ -5,7 +5,9 @@ class RoomGrid extends Component {
         this.state = {
             usingKeyboard: false,
             lastTileX: props.selectedX || 0,
-            lastTileY: props.selectedY || 0
+            lastTileY: props.selectedY || 0,
+            currentTileX: '',
+            currentTileY: ''
         }
 
         this.frameIndex = 0
@@ -24,6 +26,24 @@ class RoomGrid extends Component {
                 e.preventDefault()
                 this.pointerDraw(e)
             }
+            //Get the current X and Y tile position
+            let pointer = e.touches ? e.touches[0] : e
+            let { roomWidth, roomHeight } = this.props
+            let rect = this.node.getBoundingClientRect()
+            let tileWidth = rect.width / roomWidth
+            let tileHeight = rect.height / roomHeight
+            let relX = pointer.clientX - rect.x
+            let relY = pointer.clientY - rect.y
+            if (relX < 0 || relY < 0 || relX >= rect.width || relY >= rect.height) {
+                return
+            }
+
+            let x = Math.floor(relX / tileWidth)
+            let y = Math.floor(relY / tileHeight)
+            if (x != this.state.currentTileX || y != this.state.currentTileY){
+                this.setState({ currentTileX: x, currentTileY: y })
+            }
+
         }
 
         this.pointerEnd = (e) => {
@@ -31,6 +51,7 @@ class RoomGrid extends Component {
                 e.preventDefault()
                 this.pointerIsDown = false
             }
+
         }
 
         this.keyDown = (e) => {
@@ -84,7 +105,10 @@ class RoomGrid extends Component {
             this.drawTile(x, y, startOfDraw)
 
             this.setState({ lastTileX: x, lastTileY: y })
+
         }
+
+
 
         this.drawTile = (x, y, startOfDraw) => {
             let { tileList, selectTile, drawTile, eraseTile, currentSpriteName, spriteIsTransparent } = this.props
@@ -277,7 +301,6 @@ class RoomGrid extends Component {
         let highlightHeight = 100 / roomHeight
         let tileX = lastTileX * highlightWidth
         let tileY = lastTileY * highlightHeight
-
         let gridHighlight = !usingKeyboard ? null :
             div({
                 className: 'grid-highlight',
@@ -299,6 +322,14 @@ class RoomGrid extends Component {
             ref: node => { this.node = node },
             tabindex: 0
         }, [
+            div({
+                className: 'tile-cordinates',
+                style: {
+                    position: "absolute",
+
+                }
+            }, ['X: ' + this.state.currentTileX + " Y: " + this.state.currentTileY ])
+            ,
             canvas({
                 width: spriteWidth * roomWidth,
                 height: spriteHeight * roomHeight,

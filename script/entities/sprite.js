@@ -1,6 +1,6 @@
 let Sprite = {
 
-    create: ({ name, isAvatar, isWall, isItem, isTransparent, spriteWidth, spriteHeight, onPush, onMessage, randomStart }) => {
+    create: ({ name, isAvatar, isWall, isItem, isTransparent, spriteWidth, spriteHeight, onPush, onMessage, randomStart, onUpdate }) => {
         let newSprite = {
             name: name || '',
             isAvatar: isAvatar || false,
@@ -13,7 +13,8 @@ let Sprite = {
             frameList: [Array(spriteWidth * spriteHeight).fill(0)],
             scriptList: {
                 'on-push': onPush || '',
-                'on-message': onMessage || ''
+                'on-message': onMessage || '',
+                'on-update': onUpdate || ''
             }
         }
         if (randomStart) {

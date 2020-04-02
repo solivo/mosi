@@ -141,6 +141,12 @@ let scriptorium = {
             text: '{set-sprite-item ?}',
             args: ['bool'],
             spriteOnly: true
+        },
+        {
+            name: 'check tile for sprite, return a sprite name',
+            text: '{check-tile ?}',
+            args: ['room','x', 'y'],
+            spriteOnly: true
         }
     ],
     'room': [
@@ -380,6 +386,27 @@ return {
                     if (isInt(curr)) return prev + curr
                     else return prev
                 }, 0)
+            },
+
+            'check-tile': (game, context, args) => {
+                    let roomIndex = -1, x = 0, y = 0, spriteName = ''
+                    if (isInt(args[0]) && isInt(args[1])) {
+                        roomIndex = game.currentRoomIndex
+                        x = args[0] || 0
+                        y = args[1] || 0
+                    }  
+                    else if (isStr(args[0]) && isInt(args[1]) && isInt(args[2])) {
+                        roomIndex = game.world.roomList.findIndex(r => r.name === args[0])
+                        x = args[1] || 0
+                        y = args[2] || 0
+                    }
+                    
+                    if (roomIndex >= 0) {
+                        x = Math.max(Math.min(x, game.world.roomWidth - 1), 0)
+                        y = Math.max(Math.min(y, game.world.roomHeight - 1), 0)
+                        spriteName = game.checkSpriteforTile(roomIndex, x, y)
+                    }
+                    return spriteName
             },
 
             'sub': (game, context, args) => {

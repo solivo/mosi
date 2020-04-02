@@ -170,6 +170,17 @@ return class {
                 } else if (key === 'ArrowDown') {
                     y++
                 }
+                     //Execute on-update event script 
+                let tileList = this.currentRoom.tileList
+                tileList.forEach(tile => {
+                    let { spriteName, x, y } = tile
+                    let sprite = this.world.spriteList.find(sprite => sprite.name === spriteName)
+                    if (sprite && !sprite.isAvatar) {
+                        //Run on update scripts
+                        let roomIndex = (roomY * worldWidth) + roomX
+                        this.runScript(sprite.scriptList, 'on-update', { sprite, tile, roomIndex })
+                    }
+                }) 
             } else if (this.pointerIsDown || this.oneMoreMove) {
                 let dx = this.pointerEndPos.x - this.pointerStartPos.x
                 let dy = this.pointerEndPos.y - this.pointerStartPos.y
@@ -354,6 +365,22 @@ return class {
             if (allCharsDrawn) {
                 this.pageIsComplete = true
             }
+        }
+
+        this.checkSpriteforTile = (roomIndex, x, y) => {
+            let room = this.world.roomList[roomIndex]
+            let spriteName = ''
+            // look at each tile in the room
+            room.tileList.forEach(tile => {
+                // ignore tiles that player is not going to be standing on
+                if (tile.x !== x || tile.y !== y) return
+                // get sprite data for the current tile
+                let sprite = this.world.spriteList.find(s => s.name === tile.spriteName)
+                //if there a sprite in that tile, return its name
+                if (sprite && sprite.name) spriteName = sprite.name
+            })
+            // return whether tile is blocking player movement
+            return spriteName
         }
 
         this.addToInventory = (item, quantity) => {

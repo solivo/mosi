@@ -244,7 +244,8 @@ let World = {
                 if (!sprite.scriptList) {
                     sprite.scriptList = {
                         'on-push': '',
-                        'on-message': ''
+                        'on-message': '',
+                        'on-update:': ''
                     }
                 }
             })
