@@ -170,7 +170,7 @@ return class {
                 } else if (key === 'ArrowDown') {
                     y++
                 }
-                     //Execute on-update event script 
+                //Execute on-update event script 
                 let tileList = this.currentRoom.tileList
                 tileList.forEach(tile => {
                     let { spriteName, x, y } = tile
@@ -200,6 +200,18 @@ return class {
                     }
                     this.movesSinceLastTouch++
                     this.oneMoreMove = false
+
+                    //Execute on-update event script 
+                    let tileList = this.currentRoom.tileList
+                    tileList.forEach(tile => {
+                        let { spriteName, x, y } = tile
+                        let sprite = this.world.spriteList.find(sprite => sprite.name === spriteName)
+                        if (sprite && !sprite.isAvatar) {
+                            //Run on update scripts
+                            let roomIndex = (roomY * worldWidth) + roomX
+                            this.runScript(sprite.scriptList, 'on-update', { sprite, tile, roomIndex })
+                        }
+                    })
                 }
             }
 
